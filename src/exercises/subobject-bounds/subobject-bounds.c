@@ -2,11 +2,12 @@
  * SPDX-License-Identifier: BSD-2-Clause-DARPA-SSITH-ECATS-HR0011-18-C-0016
  * Copyright (c) 2020 SRI International
  */
-#include <stdint.h>
 #include <printf.h>
 
-char buffer[128];
-char c;
+struct buf {
+	char buffer[128];
+	int i;
+} b;
 
 #pragma weak fill_buf
 void
@@ -16,20 +17,17 @@ fill_buf(char *buf, size_t len)
 		buf[i] = 'b';
 }
 
-#include "main-asserts.inc"
-
 void
 init(void)
 {
-	(void)buffer;
-	main_asserts();
+	b.i = 'c';
+	printf("b.i = %c\n", b.i);
 
-	c = 'c';
-	printf("c = %c\n", c);
+	fill_buf(b.buffer, sizeof(b.buffer));
 
-	fill_buf(buffer, sizeof(buffer));
-
-	printf("c = %c\n", c);
+	printf("b.i = %c\n", b.i);
 }
 
-void notified(){}
+void notified(void){}
+
+#include "asserts.inc"

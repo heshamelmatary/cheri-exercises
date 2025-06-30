@@ -45,3 +45,13 @@ to the compiler command line.
 ```C
 {{#include stack-mission.c}}
 ```
+
+**serial_server.c**
+```C
+{{#include ../../common/serial_server.c}}
+```
+
+**uninitialized-stack-frame-control-flow.system**
+```XML
+{{#include uninitialized-stack-frame-control-flow.system}}
+```
