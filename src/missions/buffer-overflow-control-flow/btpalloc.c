@@ -4,26 +4,16 @@
  */
 #include "btpalloc.h"
 
-#include <assert.h>
 #include <stddef.h>
-
-#include <sys/mman.h>
+#include <printf.h>
+#include <sel4/assert.h>
 
 #ifdef __CHERI_PURE_CAPABILITY__
 #include <cheriintrin.h>
 #endif
 
-static void *btpmem;
-static size_t btpsize;
-
-static void
-btpinit(void)
-{
-	btpsize = 0x100000;
-	btpmem = mmap(NULL, btpsize, PROT_READ | PROT_WRITE,
-	    MAP_PRIVATE | MAP_ANON, -1, 0);
-	assert(btpmem != MAP_FAILED);
-}
+void *btpmem;
+size_t btpmem_size;
 
 void *
 btpmalloc(size_t size)
@@ -31,8 +21,12 @@ btpmalloc(size_t size)
 	void *alloc;
 	size_t allocsize;
 
-	if (btpmem == NULL)
-		btpinit();
+	/* Microkit should have mapped and patched btpmem memory region during bootstrapping */
+	seL4_Assert(btpmem != NULL);
+	seL4_Assert(btpmem_size != 0);
+
+	printf("btpmem = 0x%lx\n", (size_t) btpmem);
+	printf("btpmemsize = 0x%lx\n", (size_t) btpmem_size);
 
 	alloc = btpmem;
 	/* RISC-V ABIs require 16-byte alignment */
@@ -45,14 +39,15 @@ btpmalloc(size_t size)
 	allocsize += (char *)alloc - (char *)btpmem;
 #endif
 
-	if (allocsize > btpsize)
+	if (allocsize > btpmem_size)
 		return (NULL);
 
 	btpmem = (char *)btpmem + allocsize;
-	btpsize -= allocsize;
+	btpmem_size -= allocsize;
 #ifdef __CHERI_PURE_CAPABILITY__
 	alloc = cheri_bounds_set(alloc, size);
 #endif
+	printf("Returning alloc = 0x%lx\n", (size_t) alloc);
 	return (alloc);
 }
 

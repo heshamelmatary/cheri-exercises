@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <!-- Define your system here -->
+    <protection_domain name="control-flow-pointer" priority="253">
+        <program_image path="control-flow-pointer.elf" />
+    </protection_domain>
+</system>

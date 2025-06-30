@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: BSD-2-Clause-DARPA-SSITH-ECATS-HR0011-18-C-0016
  * Copyright (c) 2020 Jessica Clarke
  */
-#include <assert.h>
+#include <sel4/assert.h>
 #include <stdint.h>
 #ifdef __CHERI_PURE_CAPABILITY__
 #include <cheriintrin.h>
@@ -27,19 +27,19 @@ main_asserts(void *buf, void *fptr)
 	 * adequately padded to ensure precise capability bounds and `fptr`
 	 * should be adjacent.
 	 */
-	assert(ubuf_top == ufptr);
+	seL4_Assert(ubuf_top == ufptr);
 #else
 	/*
 	 * Otherwise `fptr` should be 8 bytes (not 0 due to malloc's alignment
 	 * requirements) after the end of `buf`.
 	 */
-	assert(ubuf + 25008 == ufptr);
+	seL4_Assert(ubuf + 25008 == ufptr);
 #ifdef __CHERI_PURE_CAPABILITY__
 	/*
 	 * For pure-capability code this should result in the bounds of the
 	 * large `buf` allocation including all of `fptr`.
 	 */
-	assert(ubuf_top >= ufptr + sizeof(void *));
+	seL4_Assert(ubuf_top >= ufptr + sizeof(void *));
 #endif
 #endif
 }

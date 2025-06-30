@@ -7,7 +7,7 @@ different versions of the program:
 1. A baseline RISC-V compilation, to establish that the vulnerability is
    exploitable without any CHERI protections.
 
-2. A baseline CHERI-RISC-V compilation, offering strong spacial safety between
+2. A baseline CHERI-RISC-V compilation, offering strong spatial safety between
    heap allocations, including accounting for imprecision in the bounds of large
    capabilities.
 
@@ -20,7 +20,11 @@ a buffer, is to modify control flow in the program such that the `success`
 function is executed.
 
 1. Compile `buffer-overflow.c` and `btpalloc.c` together with a RISC-V target
-   and exploit the binary to execute the `success` function.
+   and exploit the binary to execute the `success` function. You also need
+   to compile `serial_server.c` to an ELF and place it in a separate
+   Microkit protection domain, with the highest priority, then generate an
+   image using the Microkit tool.
+
 
 **buffer-overflow.c**
 ```C
@@ -42,6 +46,16 @@ function is executed.
 **btpalloc.h**
 ```C
 {{#include btpalloc.h}}
+```
+
+**serial_server.c**
+```C
+{{#include ../../common/serial_server.c}}
+```
+
+**buffer-overflow-control-flow.system**
+```XML
+{{#include buffer-overflow-control-flow.system}}
 ```
 
 **main-asserts.inc**
